@@ -1,0 +1,566 @@
+Experiment no. 1: Data Transfer Programming
+
+a.	Write an assembly language program to transfer block of data bytes starting from memory location 30h to another block starting from memory location 40h( without overlapping)
+transfer block of data
+	            Mov R0, #30h                     
+Mov R1, #40h                      
+Mov R2, #05h		         
+ Loop : Mov A,@R0		        
+		Mov @R1,A
+		Inc R0
+		Inc R1
+		Djnz R2,Loop
+end
+
+Output:
+Before execution:
+30: 1 2 3 4 5
+40: 0 0 0 0 0
+After execution:
+30: 1 2 3 4 5
+40: 1 2 3 4 5
+
+
+
+
+
+b.	Program to transfer a block of data to another block considering overlapping blocks in internal memory.
+
+Mov R0, #30h
+Mov R1, #35h
+Mov R2, #07h
+Mov A,R0
+Cjne A,01h, next              //compare A & r1, if not equal jump to next
+Sjmp stop                         //short jump to address stop
+ Next : JC  bottom_trf                   //jump if there is a carry to given address
+ Back : Mov A,@R0
+		Mov @R1,A
+		Inc R0
+		Inc R1
+		Djnz R2, back//decrement r2 ,if not zero jump to back
+            stop : sjmp stop
+    bottom_trf : mov A,R0
+		Add A,R2
+		Dec A
+		mov R0,A
+		mov A,R1
+		Add A,R2
+		Dec A
+		mov R1,A
+           back1 : mov A,@R0
+		mov @R1,A
+		dec R0
+		dec R1
+		Djnz R2,back1
+Sjmp $
+
+Output:
+Before execution:
+30: 1 2 3 4 5 6 7
+
+After execution:
+30: 1 2 3 4 5 1 2 3 4 5 6 7
+
+
+
+
+
+c.	Write an assembly language program to exchange the block of data bytes present in internal memory 
+
+Mov R0, #30h
+Mov R1, #40h
+Mov R2, #5
+ Loop : mov A,@R0
+		Xch A,@R1//exchange the contents of A and 40h
+		mov @R0,A
+		Inc R0
+		Inc R1
+		Djnz R2,loop
+end
+
+
+Output:
+Before execution:
+30: 1 2 3 4 5
+40: 6 7 8 9 10
+After execution:
+30: 6 7 8 9 10
+40: 1 2 3 4 5
+
+
+
+
+
+d.	Program to exchange the contents of two external memory locations.
+Mov Dptr, #9000h             //initialize dptr with the external address 9000h
+Movx A, @Dptr                //copy the data from the external address to A
+Mov R0,A
+Inc Dptr
+Movx A,@Dptr
+Xch A,R0
+Movx @Dptr,A
+Dec 82h
+Mov A,R0
+Movx @Dptr,A
+ Loop : Sjmp loop
+End
+
+
+Output:
+Before execution:
+9000: 1 2
+After execution:
+9000:2 1
+
+
+
+
+
+
+e.	Program to arrange the given set of numbers in ascending order
+Mov R1, #7h           //count
+Mov R2, #6h           //initialize r2 with the no. of steps(n-1)
+           Loop1 : mov R0, #40h         //initialize source address
+mov R3, #6h            //initialize r3 with no. of comparisions
+ Loop : mov A,@R0
+Inc R0
+Mov 50h,@R0
+Cjne A,50h, next
+Sjmp next1
+  next : JC next1
+mov @R0,A
+Dec R0
+mov @R0,50h
+Inc R0
+next1 : Djnz R3,loop
+Djnz R2,loop1
+           Loop2 : Sjmp loop2
+End
+
+Output:
+Before execution:
+40: 5 6 4 3 7 2 1
+After execution:
+40: 1 2 3 4 5 6 7
+
+
+
+f.	Program to arrange the given set of numbers in descending order
+Mov R1, #7h
+Mov R2, #6h
+           Loop1 : mov R0, #40h
+mov R3, #6h
+	 Loop : mov A,@R0
+Inc R0
+Mov 50h,@R0
+Cjne A,50h, next
+Sjmp next1
+  next : JNC next1
+mov @R0,A
+Dec R0
+mov @R0,50h
+Inc R0
+next1 : Djnz R3,loop
+Djnz R2,loop1
+           Loop2 : Sjmp loop2 
+End
+
+Output:
+Before execution:
+40: 5 6 4 3 7 2 1
+After execution:
+40: 7 6 5 4 3 2 1
+
+
+
+
+g.	Program to find the largest number in an array
+Mov R0, #40h
+Mov R1, #6h                          //initialize r1 with the count value
+Mov A,@R0
+ Loop : Inc R0
+Mov 50h,@R0
+Cjne A, 50h, next
+Sjmp next1
+ Next : JNC next1
+Mov A,@R0
+           Next1 : Djnz R1,loop
+Mov 50h, A
+           Loop1 : Sjmp loop1
+End
+
+
+Output:
+Before execution:
+40: 5 6 4 3 7 2 1
+After execution:
+50: 7
+
+
+      
+
+ Experiment no. 2: Arithmetic Instruction programming
+
+a.	Program to add two 8 bit numbers
+Mov R1, #00h
+Mov R0, #30h
+Mov A,@R0
+Inc R0
+Add A,@R0
+JNC next//jump to next if there is no carry
+Inc R1
+ Next : Inc R0
+Mov @R0,A
+Inc R0
+Mov A,R1
+Mov @R0,A
+End
+
+Output:
+Before execution:
+30: 5 6 
+After execution:
+30: 5 6 0B
+
+
+
+
+b.	Program to subtract two 8 bit numbers
+Mov R1,#00h
+Mov R0,#30h
+Mov A, @R0
+Inc R0
+subb A,@R0
+JNC next
+Inc R1
+ Next : Inc R0
+	Mov @R0,A
+	Inc R0
+	Mov A,R1
+		Mov @R0, A
+End
+
+Output:
+Before execution:
+30: 7 6 
+After execution:
+30: 7 6 1
+
+
+c.	Program to multiply two 8 bit numbers
+Mov R0, #30h
+Mov A, @R0
+Inc R0
+Mov B,@Ro
+MUL AB                       //multiply the contents of A and B registers
+Inc R0
+Mov @R0,A
+Inc R0
+Mov @R0,B
+End
+
+Output:
+Before execution:
+30: 5 6 
+After execution:
+30: 5 6 1E
+
+
+d.	Program to divide two 8 bit numbers
+Mov R0, #30h
+Mov a, @R0
+Inc R0
+Mov B, @Ro
+DIV AB                       //Divide the contents of A by B 
+Inc R0
+Mov @R0, A
+Inc R0
+Mov @R0, B
+End
+
+Output:
+Before execution:
+30: 0D 6 
+After execution:
+30: 0D 6 2
+
+
+
+
+e.	Program to add two 16 bit numbers
+Clr C                                  
+mov R0, #30h
+mov R1, #40h
+mov A, @R0
+ADD A, @R1
+mov 50h,A
+Inc R0
+Inc R1
+mov A, @R0
+ADDC  A, @R1                
+JNC next
+Inc R2
+              Next: mov 51h,A
+                        Mov 52h, R2
+end
+
+Output:
+Before execution:
+30: 1234
+40:7453
+After execution:
+50: 87 86
+
+
+f.	Program to subtract two 16 bit numbers
+Clr C
+mov R0, #30h
+mov R1, #40h
+mov A, @R0
+SUBB A, @R1
+mov 50h,A
+Inc R0
+Inc R1
+mov A,@R0
+SUBB A,@R1
+mov 51h,A
+end
+
+Output:
+Before execution:
+30: 8234
+40:7453
+After execution:
+50: D0 0C
+
+
+g.	Program to multiply two 16 bit numbers
+mov Dptr, #9000h
+mov R4, #00
+mov R0, #30h
+mov R1, #40h
+mov A, @R0
+mov 0f0h, @R1
+mul AB
+movx   @Dptr, A
+mov R2,0f0h
+Inc R1
+mov A, @R0
+mov 0f0h, @R1
+mul AB
+ADD A, R2
+mov R2, a
+mov A,0f0h
+ADDC A, #00h
+mov R3, A
+Inc R3, A
+Inc R0
+Dec R1
+mov A, @R1
+mov 0f0h,@R1
+mul AB
+Add A,R2
+Inc Dptr
+movx @Dptr, A
+mov A, 0f0h
+ADDC A, R3
+mov R3, A
+JNC next
+Inc R4
+    next: Inc R1
+mov A, @R0
+mov 0f0h,@R1
+mul AB
+Add A,R3
+Inc Dptr
+movx  @Dptr, A
+mov A, 0f0h
+Addc A,R4
+Inc Dptr
+movx  @Dptr, A
+    loop: sjmp loop
+	end
+
+Output:
+Before execution:
+30: 1234
+40:7453
+After execution:
+9000:DC 76 45 08
+
+
+h.	Program to find the square of 8 bit number
+Mov R0, #30h
+Mov A, @R0
+Mov B, A
+Mul AB
+Mov 50h, A
+Mov 51h, B
+End
+Output:
+Before execution:
+30: 12
+After execution:
+50: 44 01
+
+
+
+i.	Program to find the cube of 8 bit number
+Mov R1, #30h
+Mov A, @R1
+Mov 0f0h, A
+Mul AB
+Mov R3, 0f0h
+Mov 0f0h, @R1
+Mul AB
+Mov 50h, A
+Mov R5, 0f0h
+Mov 0f0h, @R1
+Mov A, R3
+Mul AB
+Add A, R5
+Mov 51h, A
+End
+
+Output:
+Before execution:
+30: 12
+After execution:
+50: C8 16
+
+
+
+ 
+
+
+Experiment no. 3: Logical Instructions programming
+
+a.	Program to logically AND, OR, XOR two 8 bit numbers
+Mov A, 21h
+Anl A, 22h                         //logically AND the contents of A and 22h
+Mov 30h, A
+Mov A, 21h
+Orl A, 22h                          //logically OR the contents of A and 22h
+Mov 31h, A
+Mov A, 21h
+Xrl A, 22h                          //logically XOR the contents of A and 22h
+Mov 32h, A
+End
+
+Output:
+Before execution:
+21: 15 18
+After execution:
+30:10 1D 0D
+
+
+
+Experiment no. 4: Code conversions programming
+
+a.	Program to convert BCD to ASCII
+mov  R1, #02h
+mov  R0, #40h
+mov A, @R0
+mov 0f0h, A
+ANL  A, #0fh
+                 back:  Add A, #30h
+               Inc R0
+               Mov  @R0, A
+               Djnz  R1, next
+               Sjmp  loop 
+    next: mov A, 0f0h
+               ANL  A, #0f0h
+                             SWAP   A                                           
+                             sjmp  back
+                   loop :sjmp loop
+	              end
+
+Output:
+Before execution:
+40: 12
+After execution:
+40:12 32 31
+
+
+
+
+
+b.	Program to convert Decimal to ASCII
+mov R0, #30h
+mov A, @R0
+Add A, #30h
+Inc R0
+mov   @R0, A
+end
+
+Output:
+Before execution:
+30: 15
+After execution:
+30:15 45
+
+
+
+c.	Program to convert ASCII to Decimal
+mov R0, #30h
+mov A, @R0
+SUBB  A, #30h
+Inc R0
+mov @R0, A
+end
+
+Output:
+Before execution:
+30: 62
+After execution:
+30:62 32
+
+
+
+
+
+d.	Program to convert Hexadecimal to Decimal
+mov R0,#30h
+mov A, @R0
+mov 0f0h, #0Ah
+DIV  AB
+mov R1, 0f0h
+mov 0f0h, #0Ah
+Div AB
+mov 40h, A
+mov A, 0f0h
+SWAP A
+Orl A,R1
+mov 41h, A
+end
+
+Output:
+Before execution:
+30: B2
+After execution:
+40: 01 78
+
+
+
+
+e.	Program to convert Decimal to Hexadecimal
+mov R0, #30h
+mov A, @R0
+mov 0f0h, #10h
+Div AB
+mov R1, 0f0h
+mov 0f0h, #0Ah
+mul AB
+Add A, R1
+Inc R0
+mov @R0, A
+end
+
+Output:
+Before execution:
+30: 62
+After execution:
+30:62 3E
+
+
+
