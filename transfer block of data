@@ -1,9 +1,0 @@
- Mov R0, #30h                     
-Mov R1, #40h                      
-Mov R2, #05h		         
- Loop : Mov A,@R0		        
-		Mov @R1,A
-		Inc R0
-		Inc R1
-		Djnz R2,Loop
-end
